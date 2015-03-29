@@ -1,6 +1,11 @@
 /*!
- * videoScript.js v0.13
+ * videoScript.js v0.14
  * Copyright 2015 SelmanMade
+ *
+ * Changes in 0.14
+ * - Minor fixes for wider browser support
+ * - Native controls fix for Firefox
+ * - Added WebM priority
  *
  * Changes in 0.13
  * - Added alert when video is not found
@@ -52,6 +57,7 @@ window.videoScript = (function () {
 		wrapperElem.id = id;
 		videoElem = document.createElement('video');
 		videoElem.controls = video.controls === true;
+		videoElem.setAttribute('controls', video.controls === true ? 'true' : 'false');
 		videoElem.loop = video.loop === true;
 		videoElem.preload = 'auto';
 		videoElem.width = 800;
@@ -74,16 +80,15 @@ window.videoScript = (function () {
 				buttonElem.style.zIndex = 99;
 				buttonElem.style.cursor = 'pointer';
 				buttonElem.style.position = 'absolute';
-				//buttonElem.style.background = 'none';
-				//buttonElem.style.backgroundColor = 'rgba(255,255,255,0)';
-				buttonElem.style.backgroundColor = '#ff0000';
+				buttonElem.style.background = 'none';
+				buttonElem.style.backgroundColor = 'rgba(255,255,255,0)';				
 				buttonElem.style.border = 'none';
 				buttonElem.style.top = button.position.top + 'px';
 				buttonElem.style.left = button.position.left + 'px';
 				buttonElem.style.width = button.size.width + 'px';
 				buttonElem.style.height = button.size.height + 'px';
 				buttonElem.type = 'button';
-				buttonElem.addEventListener('click', function(button) {
+				buttonElem.addEventListener('click', function (button) {
 					return function () {
 						loadVideo(button.toVideo);
 					};
@@ -95,7 +100,12 @@ window.videoScript = (function () {
 			var sourceElem = document.createElement('source');
 			sourceElem.src = video.sources[i].src;
 			sourceElem.type = video.sources[i].type;
-			videoElem.appendChild(sourceElem);
+			if (sourceElem.type == 'video/webm') {
+				videoElem.insertBefore(sourceElem, videoElem.firstChild);				
+			}
+			else {
+				videoElem.appendChild(sourceElem);
+			}
 		};
 		wrapperElem.appendChild(videoElem);
 		return wrapperElem;
@@ -155,9 +165,15 @@ window.videoScript = (function () {
 		}
 	}
 	function tryPlayVideo(videoElem) {
+		if (videoElem.ended == true) {
+			//videoElem.play();
+			videoElem.currentTime = 0;
+		}
+		console.info(videoElem.readyState);
 		if (videoElem.readyState == 4) {
 			videoElem.currentTime = 0;
 			videoElem.play();
+
 		}
 		else {
 			setTimeout(function () {
