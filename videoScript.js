@@ -1,6 +1,11 @@
 /*!
- * videoScript.js v0.14
+ * videoScript.js v0.15
  * Copyright 2015 SelmanMade
+ *
+ * Changes in 0.15
+ * - Added support for 'toUrl' for buttons
+ * - Added support for 'target' for buttons when using 'toUrl'
+ * - Added support for 'delay' for buttons in ms
  *
  * Changes in 0.14
  * - Minor fixes for wider browser support
@@ -20,7 +25,6 @@
 
 window.videoScript = (function () {
 	var videos = [];
-	window.vds = videos;
 
 	function getVideo(id) {
 		var result = videos.filter(function (video, index) {
@@ -55,6 +59,7 @@ window.videoScript = (function () {
 		wrapperElem = document.createElement('div');
 		wrapperElem.style.position = 'relative';
 		wrapperElem.id = id;
+		wrapperElem.buttons = [];
 		videoElem = document.createElement('video');
 		videoElem.controls = video.controls === true;
 		videoElem.setAttribute('controls', video.controls === true ? 'true' : 'false');
@@ -73,27 +78,47 @@ window.videoScript = (function () {
 		if (video.buttons) {
 			for (var i = 0; i < video.buttons.length; i++) {
 				var button = video.buttons[i];
-				if (getVideo(button.toVideo) == null) {
+
+				var buttonElem;
+				if (button.toVideo) {
+					if (getVideo(button.toVideo) == null) {
+						continue;
+					}
+					buttonElem = document.createElement('button');
+					buttonElem.type = 'button';
+					buttonElem.addEventListener('click', function (button) {
+						return function () {
+							loadVideo(button.toVideo);
+						};
+					}(button));
+				}
+				else if (button.toUrl) {
+					buttonElem = document.createElement('a');
+					buttonElem.href = button.toUrl;
+					buttonElem.target = button.target || '_blank';
+				}
+				else {
 					continue;
 				}
-				var buttonElem = document.createElement('button');
+
 				buttonElem.style.zIndex = 99;
 				buttonElem.style.cursor = 'pointer';
 				buttonElem.style.position = 'absolute';
 				buttonElem.style.background = 'none';
-				buttonElem.style.backgroundColor = 'rgba(255,255,255,0)';				
+				buttonElem.style.backgroundColor = videoScript.buttonBackgroundColor;
 				buttonElem.style.border = 'none';
 				buttonElem.style.top = button.position.top + 'px';
 				buttonElem.style.left = button.position.left + 'px';
 				buttonElem.style.width = button.size.width + 'px';
 				buttonElem.style.height = button.size.height + 'px';
-				buttonElem.type = 'button';
-				buttonElem.addEventListener('click', function (button) {
-					return function () {
-						loadVideo(button.toVideo);
-					};
-				}(button));
-				wrapperElem.appendChild(buttonElem);
+
+				buttonElem.delay = 0;
+				wrapperElem.buttons.push(buttonElem);
+
+				if (button.delay) {
+					buttonElem.delay = Number(button.delay);
+				}
+				//wrapperElem.appendChild(buttonElem);
 			};
 		}	
 		for (var i = 0; i < video.sources.length; i++) {
@@ -139,7 +164,9 @@ window.videoScript = (function () {
 		}
 		if (video.buttons) {
 			for (var i = 0; i < video.buttons.length; i++) {
-				ids.push(video.buttons[i].toVideo);
+				if (video.buttons[i].toVideo) {
+					ids.push(video.buttons[i].toVideo);
+				}
 			};
 		}
 
@@ -147,6 +174,15 @@ window.videoScript = (function () {
 		removeVideos(ids);
 		
 		var wrapperElem = document.getElementById(id);
+
+		for (var i = 0; i < wrapperElem.buttons.length; i++) {
+			setTimeout(function (wrapperElem, buttonElem) {
+				return function () {
+					wrapperElem.appendChild(buttonElem);
+				};
+			}(wrapperElem, wrapperElem.buttons[i]), wrapperElem.buttons[i].delay);
+		};
+
 		wrapperElem.style.display = "block";
 		var videoElem = wrapperElem.getElementsByTagName('video')[0];
 
@@ -169,7 +205,7 @@ window.videoScript = (function () {
 			//videoElem.play();
 			videoElem.currentTime = 0;
 		}
-		console.info(videoElem.readyState);
+
 		if (videoElem.readyState == 4) {
 			videoElem.currentTime = 0;
 			videoElem.play();
@@ -220,7 +256,8 @@ window.videoScript = (function () {
 			videos = jsonData.videos;
 			loadVideo(videos[0].id);
 		},
-		containerId: 'videoContainer'
+		containerId: 'videoContainer',
+		buttonBackgroundColor: 'rgba(255,255,255,0)'
 	};
 
 	return videoScript;

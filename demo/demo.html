@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>VideoScript Demo</title>
+	<script src="../videoScript.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="block-center" id="videoContainer"></div>
+			</div>
+		</div>
+	</div>
+	<script>
+		videoScript.containerId = 'videoContainer';
+		videoScript.buttonBackgroundColor = 'rgba(255,255,255,.5)';
+		videoScript.loadUrl('JV_hp41_amazon_all.js');
+	</script>
+</body>
+</html>
