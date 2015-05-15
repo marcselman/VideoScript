@@ -1,9 +1,10 @@
 /*!
- * videoScript.js v0.15.1
+ * videoScript.js v0.15
  * Copyright 2015 SelmanMade
  *
  * Changes in 0.15.1
- * - Added small array filter shim (from Mozilla) for older browsers (IE8)
+ * - Added small array filter shim (from Mozilla) for older browsers
+ * - Added addEvent function for older browsers
  *
  * Changes in 0.15
  * - Added support for 'toUrl' for buttons
@@ -58,6 +59,15 @@ if (!Array.prototype.filter) {
 
 window.videoScript = (function () {
 	var videos = [];
+	
+	function addEvent(element, type, listener, useCapture) {
+		if (element.attachEvent) {
+			return element.attachEvent('on' + type, listener);
+		}
+		else {
+			return element.addEventListener(type, listener, useCapture);
+		}
+	}
 
 	function getVideo(id) {
 		var result = videos.filter(function (video, index) {
@@ -103,7 +113,7 @@ window.videoScript = (function () {
 		if (video.nextVideo) {
 			var nextVideo = getVideo(video.nextVideo);
 			if (nextVideo != null) {
-				videoElem.addEventListener('ended', function () {
+				addEvent(videoElem, 'ended', function () {
 					loadVideo(nextVideo.id);
 				});
 			}
@@ -119,7 +129,7 @@ window.videoScript = (function () {
 					}
 					buttonElem = document.createElement('button');
 					buttonElem.type = 'button';
-					buttonElem.addEventListener('click', function (button) {
+					addEvent(buttonElem, 'click', function (button) {
 						return function () {
 							loadVideo(button.toVideo);
 						};
