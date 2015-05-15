@@ -1,6 +1,9 @@
 /*!
- * videoScript.js v0.15
+ * videoScript.js v0.15.1
  * Copyright 2015 SelmanMade
+ *
+ * Changes in 0.15.1
+ * - Added small array filter shim (from Mozilla) for older browsers (IE8)
  *
  * Changes in 0.15
  * - Added support for 'toUrl' for buttons
@@ -22,6 +25,36 @@
  *
  * Freely distributable under the MIT license.
  */
+
+if (!Array.prototype.filter) {
+	Array.prototype.filter = function(fun/*, thisArg*/) {
+		'use strict';
+
+		if (this === void 0 || this === null) {
+			throw new TypeError();
+		}
+
+		var t = Object(this);
+		var len = t.length >>> 0;
+		if (typeof fun !== 'function') {
+			throw new TypeError();
+		}
+
+		var res = [];
+		var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
+		for (var i = 0; i < len; i++) {
+			if (i in t) {
+				var val = t[i];
+
+				if (fun.call(thisArg, val, i, t)) {
+					res.push(val);
+				}
+			}
+		}
+
+		return res;
+	};
+}
 
 window.videoScript = (function () {
 	var videos = [];
