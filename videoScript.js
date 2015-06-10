@@ -1,5 +1,5 @@
 /*!
- * videoScript.js v0.15
+ * videoScript.js v0.15.1
  * Copyright 2015 SelmanMade
  *
  * Changes in 0.15.1
