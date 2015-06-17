@@ -16,8 +16,10 @@
 	</div>
 	<script>
 		videoScript.containerId = 'videoContainer';
-		videoScript.buttonBackgroundColor = 'rgba(255,255,255,.5)';
-		videoScript.loadUrl('JV_hp41_amazon_all.js');
+		//videoScript.buttonBackgroundColor = 'rgba(255,255,255,.5)';
+		//videoScript.loadUrl('JV_hp41_amazon_all.js');
+
+		videoScript.loadData({ "videos": [ { "id": "JVB", "poster": "https://s3.eu-central-1.amazonaws.com/euregiointeractivev01/Videofront_test.png", "autoplay": false, "controls": true, "loop": true, "sources": [ { "src": "https://s3.eu-central-1.amazonaws.com/univejv/mp4+high+profiles/JVB_hp_4.1.mp4", "type": "video/mp4" }, { "src": "https://s3.eu-central-1.amazonaws.com/univejv/JVB.ogv", "type": "video/ogg" }, { "src": "https://s3.eu-central-1.amazonaws.com/univejv/JVB.webm", "type": "video/webm" } ], "buttons": [ { "position": { "top": 159, "left": 72 }, "size": { "width": 162, "height": 39 }, "toUrl": "http://www.google.com", "delay": 4000, "xtoVideo": "JVB" }, { "position": { "top": 249, "left": 72 }, "size": { "width": 162, "height": 39 }, "text": "", "toVideo": "JVB" }, { "position": { "top": 338, "left": 72 }, "size": { "width": 162, "height": 39 }, "text": "", "toVideo": "JVB" } ] } ] });
 	</script>
 </body>
 </html>

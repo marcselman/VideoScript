@@ -1,6 +1,9 @@
 /*!
- * videoScript.js v0.15.1
  * Copyright 2015 SelmanMade
+ *
+ * Changes in 0.16
+ * - Added support for poster attribute on videos
+ * - Fix to support autoplay = false
  *
  * Changes in 0.15.1
  * - Added small array filter shim (from Mozilla) for older browsers
@@ -107,6 +110,9 @@ window.videoScript = (function () {
 		videoElem.controls = video.controls === true;
 		videoElem.setAttribute('controls', video.controls === true ? 'true' : 'false');
 		videoElem.loop = video.loop === true;
+		if (video.poster) {
+			videoElem.poster = video.poster;
+		}
 		videoElem.preload = 'auto';
 		videoElem.width = 800;
 		videoElem.height = 450;
@@ -161,7 +167,6 @@ window.videoScript = (function () {
 				if (button.delay) {
 					buttonElem.delay = Number(button.delay);
 				}
-				//wrapperElem.appendChild(buttonElem);
 			};
 		}	
 		for (var i = 0; i < video.sources.length; i++) {
@@ -191,7 +196,9 @@ window.videoScript = (function () {
 			}
 			if (wrapperElem != null) {
 				var videoElem = wrapperElem.getElementsByTagName('video')[0];
-				tryStopVideo(videoElem);
+				if (!videoElem.paused || videoElem.currentTime != 0) {
+					tryStopVideo(videoElem);
+				}
 				wrapperElem.style.display = 'none';
 			}
 		};
@@ -229,7 +236,9 @@ window.videoScript = (function () {
 		wrapperElem.style.display = "block";
 		var videoElem = wrapperElem.getElementsByTagName('video')[0];
 
-		tryPlayVideo(videoElem);
+		if (video.autoplay === true) {
+			tryPlayVideo(videoElem);
+		}
 	}
 
 	function tryStopVideo(videoElem) {
@@ -245,14 +254,12 @@ window.videoScript = (function () {
 	}
 	function tryPlayVideo(videoElem) {
 		if (videoElem.ended == true) {
-			//videoElem.play();
 			videoElem.currentTime = 0;
 		}
 
 		if (videoElem.readyState == 4) {
 			videoElem.currentTime = 0;
 			videoElem.play();
-
 		}
 		else {
 			setTimeout(function () {
