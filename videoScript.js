@@ -116,6 +116,7 @@ window.videoScript = (function () {
 		videoElem.preload = 'auto';
 		videoElem.width = 800;
 		videoElem.height = 450;
+		videoElem.style.width = videoScript.width;
 		if (video.nextVideo) {
 			var nextVideo = getVideo(video.nextVideo);
 			if (nextVideo != null) {
@@ -307,7 +308,8 @@ window.videoScript = (function () {
 			loadVideo(videos[0].id);
 		},
 		containerId: 'videoContainer',
-		buttonBackgroundColor: 'rgba(255,255,255,0)'
+		buttonBackgroundColor: 'rgba(255,255,255,0)',
+		width: '100%'
 	};
 
 	return videoScript;
